@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../database/app_database.dart';
+import 'package:drift/drift.dart' as drift;
 
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
   throw UnimplementedError('categoryRepositoryProvider must be overridden with a valid instance');
