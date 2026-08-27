@@ -28,7 +28,7 @@ class CategoriesScreen extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Supprimer la catégorie ?'),
-        content: const Text('Cette action supprimera également toutes les affiches de cette catégorie. Est-ce irréversible.'),
+        content: const Text('Cette action supprimera également toutes les affiches de cette catégorie. Elle est irréversible.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
