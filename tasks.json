@@ -1,0 +1,23 @@
+{
+  "version": "1",
+  "tasks": [
+    {
+      "label": "flutter run",
+      "command": "flutter",
+      "args": ["run"],
+      "tags": ["flutter", "run"],
+      "reveal": "always",
+      "use_new_terminal": true,
+      "allow_concurrent_runs": false
+    },
+    {
+      "label": "flutter run (release)",
+      "command": "flutter",
+      "args": ["run", "--release"],
+      "tags": ["flutter", "run", "release"],
+      "reveal": "always",
+      "use_new_terminal": true,
+      "allow_concurrent_runs": false
+    }
+  ]
+}

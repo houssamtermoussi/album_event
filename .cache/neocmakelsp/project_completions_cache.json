@@ -1,0 +1,135 @@
+{
+  "date": "2026-08-27T11:20:57.380467856+01:00",
+  "data": {
+    "/home/houssam/dev/album_event/linux/flutter/generated_plugins.cmake": [
+      {
+        "label": "PLUGIN_BUNDLED_LIBRARIES",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/generated_plugins.cmake"
+      }
+    ],
+    "/home/houssam/dev/album_event/linux/flutter/CMakeLists.txt": [
+      {
+        "label": "list_prepend",
+        "kind": 3,
+        "detail": "Function",
+        "documentation": "defined function\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt\n\nwhich isn't available in 3.10."
+      },
+      {
+        "label": "EPHEMERAL_DIR",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt"
+      },
+      {
+        "label": "NEW_LIST",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt"
+      },
+      {
+        "label": "${LIST_NAME}",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt"
+      },
+      {
+        "label": "PkgConfig_LIBRARIES",
+        "kind": 6,
+        "detail": "Variable",
+        "documentation": "package: PkgConfig"
+      },
+      {
+        "label": "PkgConfig_INCLUDE_DIRS",
+        "kind": 6,
+        "detail": "Variable",
+        "documentation": "package: PkgConfig"
+      },
+      {
+        "label": "PkgConfig::GTK",
+        "kind": 6,
+        "detail": "Package",
+        "documentation": "package: GTK"
+      },
+      {
+        "label": "GTK_LIBRARIES",
+        "kind": 6,
+        "detail": "Package",
+        "documentation": "package: GTK"
+      },
+      {
+        "label": "GTK_INCLUDE_DIRS",
+        "kind": 6,
+        "detail": "Package",
+        "documentation": "package: GTK"
+      },
+      {
+        "label": "PkgConfig::GLIB",
+        "kind": 6,
+        "detail": "Package",
+        "documentation": "package: GLIB"
+      },
+      {
+        "label": "GLIB_LIBRARIES",
+        "kind": 6,
+        "detail": "Package",
+        "documentation": "package: GLIB"
+      },
+      {
+        "label": "GLIB_INCLUDE_DIRS",
+        "kind": 6,
+        "detail": "Package",
+        "documentation": "package: GLIB"
+      },
+      {
+        "label": "PkgConfig::GIO",
+        "kind": 6,
+        "detail": "Package",
+        "documentation": "package: GIO"
+      },
+      {
+        "label": "GIO_LIBRARIES",
+        "kind": 6,
+        "detail": "Package",
+        "documentation": "package: GIO"
+      },
+      {
+        "label": "GIO_INCLUDE_DIRS",
+        "kind": 6,
+        "detail": "Package",
+        "documentation": "package: GIO"
+      },
+      {
+        "label": "FLUTTER_LIBRARY",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt"
+      },
+      {
+        "label": "FLUTTER_LIBRARY",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt\n\nPublished to parent scope for install step."
+      },
+      {
+        "label": "FLUTTER_ICU_DATA_FILE",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt"
+      },
+      {
+        "label": "PROJECT_BUILD_DIR",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt"
+      },
+      {
+        "label": "AOT_LIBRARY",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt"
+      }
+    ]
+  }
+}

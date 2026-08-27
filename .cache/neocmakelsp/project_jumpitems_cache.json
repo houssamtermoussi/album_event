@@ -1,0 +1,158 @@
+{
+  "date": "2026-08-27T11:20:57.380517971+01:00",
+  "data": {
+    "FLUTTER_LIBRARY": {
+      "location": {
+        "uri": "file:///home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 31,
+            "character": 4
+          },
+          "end": {
+            "line": 31,
+            "character": 19
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt\n\nPublished to parent scope for install step.",
+      "is_function": false
+    },
+    "PLUGIN_BUNDLED_LIBRARIES": {
+      "location": {
+        "uri": "file:///home/houssam/dev/album_event/linux/flutter/generated_plugins.cmake",
+        "range": {
+          "start": {
+            "line": 10,
+            "character": 4
+          },
+          "end": {
+            "line": 10,
+            "character": 28
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/generated_plugins.cmake",
+      "is_function": false
+    },
+    "list_prepend": {
+      "location": {
+        "uri": "file:///home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 13,
+            "character": 9
+          },
+          "end": {
+            "line": 13,
+            "character": 21
+          }
+        }
+      },
+      "document_info": "defined function\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt\n\nwhich isn't available in 3.10.",
+      "is_function": true
+    },
+    "${LIST_NAME}": {
+      "location": {
+        "uri": "file:///home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 8
+          },
+          "end": {
+            "line": 18,
+            "character": 20
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+      "is_function": false
+    },
+    "AOT_LIBRARY": {
+      "location": {
+        "uri": "file:///home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 34,
+            "character": 4
+          },
+          "end": {
+            "line": 34,
+            "character": 15
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+      "is_function": false
+    },
+    "EPHEMERAL_DIR": {
+      "location": {
+        "uri": "file:///home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 3,
+            "character": 4
+          },
+          "end": {
+            "line": 3,
+            "character": 17
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+      "is_function": false
+    },
+    "NEW_LIST": {
+      "location": {
+        "uri": "file:///home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 14,
+            "character": 8
+          },
+          "end": {
+            "line": 14,
+            "character": 16
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+      "is_function": false
+    },
+    "PROJECT_BUILD_DIR": {
+      "location": {
+        "uri": "file:///home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 33,
+            "character": 4
+          },
+          "end": {
+            "line": 33,
+            "character": 21
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+      "is_function": false
+    },
+    "FLUTTER_ICU_DATA_FILE": {
+      "location": {
+        "uri": "file:///home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 32,
+            "character": 4
+          },
+          "end": {
+            "line": 32,
+            "character": 25
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/houssam/dev/album_event/linux/flutter/CMakeLists.txt",
+      "is_function": false
+    }
+  }
+}
