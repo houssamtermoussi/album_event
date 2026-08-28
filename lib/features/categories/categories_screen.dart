@@ -7,10 +7,11 @@ import '../../data/repositories/category_repository.dart';
 import '../../widgets/category_card.dart';
 import 'create_category_sheet.dart';
 
-final categoriesStreamProvider = StreamProvider.autoDispose<List<CategoryModel>>((ref) {
-  final repo = ref.watch(categoryRepositoryProvider);
-  return repo.watchCategories();
-});
+final categoriesStreamProvider =
+    StreamProvider.autoDispose<List<CategoryModel>>((ref) {
+      final repo = ref.watch(categoryRepositoryProvider);
+      return repo.watchCategories();
+    });
 
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
@@ -19,16 +20,23 @@ class CategoriesScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => CreateCategorySheet(existingId: id, initialName: name),
+      builder: (context) =>
+          CreateCategorySheet(existingId: id, initialName: name),
     );
   }
 
-  void _deleteCategory(BuildContext context, WidgetRef ref, CategoryModel category) {
+  void _deleteCategory(
+    BuildContext context,
+    WidgetRef ref,
+    CategoryModel category,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Supprimer la catégorie ?'),
-        content: const Text('Cette action supprimera également toutes les affiches de cette catégorie. Elle est irréversible.'),
+        content: const Text(
+          'Cette action supprimera également toutes les affiches de cette catégorie. Elle est irréversible.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -69,7 +77,10 @@ class CategoriesScreen extends ConsumerWidget {
                 children: [
                   const Text('Aucune catégorie'),
                   const SizedBox(height: AppSizes.s12),
-                  const Text('Créez votre première catégorie\npour commencer à organiser vos affiches.', textAlign: TextAlign.center),
+                  const Text(
+                    'Créez votre première catégorie\npour commencer à organiser vos affiches.',
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: AppSizes.s24),
                   ElevatedButton(
                     onPressed: () => _showCreateSheet(context),
@@ -101,12 +112,22 @@ class CategoriesScreen extends ConsumerWidget {
                             title: const Text('Modifier le nom'),
                             onTap: () {
                               Navigator.pop(context);
-                              _showCreateSheet(context, id: category.id, name: category.name);
+                              _showCreateSheet(
+                                context,
+                                id: category.id,
+                                name: category.name,
+                              );
                             },
                           ),
                           ListTile(
-                            leading: const Icon(Icons.delete, color: Colors.red),
-                            title: const Text('Supprimer', style: TextStyle(color: Colors.red)),
+                            leading: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                            title: const Text(
+                              'Supprimer',
+                              style: TextStyle(color: Colors.red),
+                            ),
                             onTap: () {
                               Navigator.pop(context);
                               _deleteCategory(context, ref, category);

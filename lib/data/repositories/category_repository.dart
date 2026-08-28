@@ -7,7 +7,9 @@ import 'package:uuid/uuid.dart';
 import '../database/app_database.dart';
 
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
-  throw UnimplementedError('categoryRepositoryProvider must be overridden with a valid instance');
+  throw UnimplementedError(
+    'categoryRepositoryProvider must be overridden with a valid instance',
+  );
 });
 
 class CategoryRepository {
@@ -25,12 +27,16 @@ class CategoryRepository {
   }
 
   Future<CategoryModel> getCategory(String id) async {
-    return await (_db.select(_db.categories)..where((c) => c.id.equals(id))).getSingle();
+    return await (_db.select(
+      _db.categories,
+    )..where((c) => c.id.equals(id))).getSingle();
   }
 
   Future<void> addCategory(String name) async {
     final now = DateTime.now();
-    await _db.into(_db.categories).insert(
+    await _db
+        .into(_db.categories)
+        .insert(
           CategoriesCompanion.insert(
             id: _uuid.v4(),
             name: name,
@@ -53,9 +59,9 @@ class CategoryRepository {
   /// Supprime la catégorie ET toutes ses affiches (+ leurs fichiers sur disque).
   Future<void> deleteCategory(String id) async {
     // 1. Récupérer toutes les affiches de la catégorie
-    final posters = await (_db.select(_db.posters)
-          ..where((p) => p.categoryId.equals(id)))
-        .get();
+    final posters = await (_db.select(
+      _db.posters,
+    )..where((p) => p.categoryId.equals(id))).get();
 
     // 2. Supprimer les fichiers image associés
     for (final poster in posters) {

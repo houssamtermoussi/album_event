@@ -11,18 +11,18 @@ import '../../data/repositories/category_repository.dart';
 import '../../data/repositories/poster_repository.dart';
 
 // Stream des affiches pour une catégorie donnée
-final categoryPostersProvider =
-    StreamProvider.autoDispose.family<List<PosterModel>, String>((ref, categoryId) {
-  final repo = ref.watch(posterRepositoryProvider);
-  return repo.watchPostersByCategory(categoryId);
-});
+final categoryPostersProvider = StreamProvider.autoDispose
+    .family<List<PosterModel>, String>((ref, categoryId) {
+      final repo = ref.watch(posterRepositoryProvider);
+      return repo.watchPostersByCategory(categoryId);
+    });
 
 // Données de la catégorie (nom, etc.)
-final singleCategoryProvider =
-    FutureProvider.autoDispose.family<CategoryModel, String>((ref, id) {
-  final repo = ref.watch(categoryRepositoryProvider);
-  return repo.getCategory(id);
-});
+final singleCategoryProvider = FutureProvider.autoDispose
+    .family<CategoryModel, String>((ref, id) {
+      final repo = ref.watch(categoryRepositoryProvider);
+      return repo.getCategory(id);
+    });
 
 class CategoryDetailScreen extends ConsumerStatefulWidget {
   final String categoryId;
@@ -30,7 +30,8 @@ class CategoryDetailScreen extends ConsumerStatefulWidget {
   const CategoryDetailScreen({super.key, required this.categoryId});
 
   @override
-  ConsumerState<CategoryDetailScreen> createState() => _CategoryDetailScreenState();
+  ConsumerState<CategoryDetailScreen> createState() =>
+      _CategoryDetailScreenState();
 }
 
 class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
@@ -46,25 +47,31 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
   // ─── Ajout d'une affiche via galerie ────────────────────────────────────────
   Future<void> _addPoster(BuildContext context, WidgetRef ref) async {
     final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (image == null) return;
 
     try {
-      await ref.read(posterRepositoryProvider).addPoster(
-            imagePath: image.path,
-            categoryId: widget.categoryId,
-          );
+      await ref
+          .read(posterRepositoryProvider)
+          .addPoster(imagePath: image.path, categoryId: widget.categoryId);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur lors de l\'ajout : $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erreur lors de l\'ajout : $e')));
       }
     }
   }
 
   // ─── Menu contextuel d'une affiche ──────────────────────────────────────────
-  void _showPosterOptions(BuildContext context, WidgetRef ref, PosterModel poster) {
+  void _showPosterOptions(
+    BuildContext context,
+    WidgetRef ref,
+    PosterModel poster,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (ctx) => SafeArea(
@@ -73,7 +80,10 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.delete_outline, color: Colors.red),
-              title: const Text('Supprimer', style: TextStyle(color: Colors.red)),
+              title: const Text(
+                'Supprimer',
+                style: TextStyle(color: Colors.red),
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 _confirmDeletePoster(context, ref, poster);
@@ -86,7 +96,11 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
   }
 
   // ─── Confirmation de suppression d'une affiche ───────────────────────────────
-  void _confirmDeletePoster(BuildContext context, WidgetRef ref, PosterModel poster) {
+  void _confirmDeletePoster(
+    BuildContext context,
+    WidgetRef ref,
+    PosterModel poster,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -100,7 +114,9 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
-              ref.read(posterRepositoryProvider).deletePoster(poster.id, poster.imagePath);
+              ref
+                  .read(posterRepositoryProvider)
+                  .deletePoster(poster.id, poster.imagePath);
             },
             child: const Text('Supprimer', style: TextStyle(color: Colors.red)),
           ),
@@ -144,7 +160,9 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                     hintText: 'Rechercher par titre...',
                     prefixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        AppSizes.radiusMedium,
+                      ),
                     ),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
@@ -174,13 +192,17 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                             Icon(
                               Icons.image_outlined,
                               size: AppSizes.s64,
-                              color: Theme.of(context).brightness == Brightness.light
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.light
                                   ? AppColors.grey300
                                   : AppColors.grey800,
                             ),
                             const SizedBox(height: AppSizes.s16),
                             Text(
-                              _searchQuery.isEmpty ? 'Aucune affiche' : 'Aucun résultat',
+                              _searchQuery.isEmpty
+                                  ? 'Aucune affiche'
+                                  : 'Aucun résultat',
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             const SizedBox(height: AppSizes.s8),
@@ -188,8 +210,11 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                               _searchQuery.isEmpty
                                   ? 'Appuyez sur + pour ajouter une affiche.'
                                   : 'Aucune affiche ne correspond à votre recherche.',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context).colorScheme.secondary,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.secondary,
                                   ),
                               textAlign: TextAlign.center,
                             ),
@@ -198,50 +223,70 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                       )
                     : GridView.builder(
                         padding: const EdgeInsets.all(AppSizes.s16),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: AppSizes.s12,
-                          mainAxisSpacing: AppSizes.s12,
-                          childAspectRatio: 0.75, // format portrait
-                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: AppSizes.s12,
+                              mainAxisSpacing: AppSizes.s12,
+                              childAspectRatio: 0.75, // format portrait
+                            ),
                         itemCount: filteredPosters.length,
                         itemBuilder: (context, index) {
                           final poster = filteredPosters[index];
                           return GestureDetector(
-                            onLongPress: () => _showPosterOptions(context, ref, poster),
+                            onLongPress: () =>
+                                _showPosterOptions(context, ref, poster),
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                                  borderRadius: BorderRadius.circular(
+                                    AppSizes.radiusMedium,
+                                  ),
                                   child: Image.file(
                                     File(poster.imagePath),
                                     fit: BoxFit.cover,
-                                    errorBuilder: (ctx, error, stack) => Container(
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).brightness == Brightness.light
-                                            ? AppColors.grey100
-                                            : AppColors.grey900,
-                                        borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
-                                      ),
-                                      child: const Center(
-                                        child: Icon(Icons.broken_image_outlined, color: AppColors.grey600),
-                                      ),
-                                    ),
+                                    errorBuilder: (ctx, error, stack) =>
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                    Brightness.light
+                                                ? AppColors.grey100
+                                                : AppColors.grey900,
+                                            borderRadius: BorderRadius.circular(
+                                              AppSizes.radiusMedium,
+                                            ),
+                                          ),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.broken_image_outlined,
+                                              color: AppColors.grey600,
+                                            ),
+                                          ),
+                                        ),
                                   ),
                                 ),
-                                if (poster.title != null && poster.title!.isNotEmpty)
+                                if (poster.title != null &&
+                                    poster.title!.isNotEmpty)
                                   Positioned(
                                     bottom: 0,
                                     left: 0,
                                     right: 0,
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 4,
+                                        horizontal: 8,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: Colors.black54,
                                         borderRadius: const BorderRadius.only(
-                                          bottomLeft: Radius.circular(AppSizes.radiusMedium),
-                                          bottomRight: Radius.circular(AppSizes.radiusMedium),
+                                          bottomLeft: Radius.circular(
+                                            AppSizes.radiusMedium,
+                                          ),
+                                          bottomRight: Radius.circular(
+                                            AppSizes.radiusMedium,
+                                          ),
                                         ),
                                       ),
                                       child: Text(

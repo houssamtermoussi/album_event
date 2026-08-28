@@ -33,7 +33,9 @@ class CategoryCard extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.light ? AppColors.grey100 : AppColors.grey800,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? AppColors.grey100
+                      : AppColors.grey800,
                   borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
                 ),
                 child: const Icon(Icons.folder_outlined),
@@ -51,8 +53,8 @@ class CategoryCard extends StatelessWidget {
                     Text(
                       '$posterCount affiche${posterCount > 1 ? 's' : ''}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                     ),
                   ],
                 ),

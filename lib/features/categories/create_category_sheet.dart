@@ -10,7 +10,8 @@ class CreateCategorySheet extends ConsumerStatefulWidget {
   const CreateCategorySheet({super.key, this.existingId, this.initialName});
 
   @override
-  ConsumerState<CreateCategorySheet> createState() => _CreateCategorySheetState();
+  ConsumerState<CreateCategorySheet> createState() =>
+      _CreateCategorySheetState();
 }
 
 class _CreateCategorySheetState extends ConsumerState<CreateCategorySheet> {
@@ -34,7 +35,7 @@ class _CreateCategorySheetState extends ConsumerState<CreateCategorySheet> {
     if (name.isEmpty) return;
 
     setState(() => _isLoading = true);
-    
+
     try {
       final repo = ref.read(categoryRepositoryProvider);
       if (widget.existingId != null) {
@@ -66,24 +67,28 @@ class _CreateCategorySheetState extends ConsumerState<CreateCategorySheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            widget.existingId != null ? 'Modifier la catégorie' : 'Nouvelle catégorie',
+            widget.existingId != null
+                ? 'Modifier la catégorie'
+                : 'Nouvelle catégorie',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: AppSizes.s24),
           TextField(
             controller: _controller,
             autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Nom de la catégorie',
-            ),
+            decoration: const InputDecoration(labelText: 'Nom de la catégorie'),
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _save(),
           ),
           const SizedBox(height: AppSizes.s32),
           ElevatedButton(
             onPressed: _isLoading ? null : _save,
-            child: _isLoading 
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+            child: _isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
                 : Text(widget.existingId != null ? 'Enregistrer' : 'Créer'),
           ),
           const SizedBox(height: AppSizes.s24),
