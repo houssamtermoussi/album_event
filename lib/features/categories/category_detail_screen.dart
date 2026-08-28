@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:share_plus/share_plus.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_sizes.dart';
 import '../../data/database/app_database.dart';
@@ -78,6 +80,15 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            ListTile(
+              leading: const Icon(Icons.share_outlined),
+              title: const Text('Partager'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                final file = XFile(poster.imagePath);
+                await Share.shareXFiles([file], text: poster.title);
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.delete_outline, color: Colors.red),
               title: const Text(
