@@ -281,9 +281,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
         }).toList();
 
         if (filteredPosters.isEmpty) {
-          return const Center(
-            child: Text('Aucun résultat trouvé'),
-          );
+          return const Center(child: Text('Aucun résultat trouvé'));
         }
 
         return GridView.builder(
@@ -309,10 +307,13 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
                       fit: BoxFit.cover,
                       errorBuilder: (ctx, error, stack) => Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).brightness == Brightness.light
+                          color:
+                              Theme.of(context).brightness == Brightness.light
                               ? AppColors.grey100
                               : AppColors.grey900,
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMedium,
+                          ),
                         ),
                         child: const Center(
                           child: Icon(
