@@ -24,10 +24,24 @@ final singleCategoryProvider =
   return repo.getCategory(id);
 });
 
-class CategoryDetailScreen extends ConsumerWidget {
+class CategoryDetailScreen extends ConsumerStatefulWidget {
   final String categoryId;
 
   const CategoryDetailScreen({super.key, required this.categoryId});
+
+  @override
+  ConsumerState<CategoryDetailScreen> createState() => _CategoryDetailScreenState();
+}
+
+class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   // ─── Ajout d'une affiche via galerie ────────────────────────────────────────
   Future<void> _addPoster(BuildContext context, WidgetRef ref) async {
@@ -38,7 +52,7 @@ class CategoryDetailScreen extends ConsumerWidget {
     try {
       await ref.read(posterRepositoryProvider).addPoster(
             imagePath: image.path,
-            categoryId: categoryId,
+            categoryId: widget.categoryId,
           );
     } catch (e) {
       if (context.mounted) {
@@ -96,9 +110,9 @@ class CategoryDetailScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final categoryAsync = ref.watch(singleCategoryProvider(categoryId));
-    final postersAsync = ref.watch(categoryPostersProvider(categoryId));
+  Widget build(BuildContext context) {
+    final categoryAsync = ref.watch(singleCategoryProvider(widget.categoryId));
+    final postersAsync = ref.watch(categoryPostersProvider(widget.categoryId));
 
     return Scaffold(
       appBar: AppBar(
@@ -115,69 +129,140 @@ class CategoryDetailScreen extends ConsumerWidget {
       ),
       body: postersAsync.when(
         data: (posters) {
-          if (posters.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.image_outlined,
-                    size: AppSizes.s64,
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? AppColors.grey300
-                        : AppColors.grey800,
-                  ),
-                  const SizedBox(height: AppSizes.s16),
-                  Text(
-                    'Aucune affiche',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: AppSizes.s8),
-                  Text(
-                    'Appuyez sur + pour ajouter une affiche.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            );
-          }
+          final filteredPosters = posters.where((p) {
+            final title = p.title?.toLowerCase() ?? '';
+            return title.contains(_searchQuery.toLowerCase());
+          }).toList();
 
-          return GridView.builder(
-            padding: const EdgeInsets.all(AppSizes.s16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: AppSizes.s12,
-              mainAxisSpacing: AppSizes.s12,
-              childAspectRatio: 0.75, // format portrait
-            ),
-            itemCount: posters.length,
-            itemBuilder: (context, index) {
-              final poster = posters[index];
-              return GestureDetector(
-                onLongPress: () => _showPosterOptions(context, ref, poster),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
-                  child: Image.file(
-                    File(poster.imagePath),
-                    fit: BoxFit.cover,
-                    errorBuilder: (ctx, error, stack) => Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? AppColors.grey100
-                            : AppColors.grey900,
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.broken_image_outlined, color: AppColors.grey600),
-                      ),
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(AppSizes.s16),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Rechercher par titre...',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
                     ),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() {
+                                _searchQuery = '';
+                              });
+                            },
+                          )
+                        : null,
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
+                  },
                 ),
-              );
-            },
+              ),
+              Expanded(
+                child: filteredPosters.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.image_outlined,
+                              size: AppSizes.s64,
+                              color: Theme.of(context).brightness == Brightness.light
+                                  ? AppColors.grey300
+                                  : AppColors.grey800,
+                            ),
+                            const SizedBox(height: AppSizes.s16),
+                            Text(
+                              _searchQuery.isEmpty ? 'Aucune affiche' : 'Aucun résultat',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: AppSizes.s8),
+                            Text(
+                              _searchQuery.isEmpty
+                                  ? 'Appuyez sur + pour ajouter une affiche.'
+                                  : 'Aucune affiche ne correspond à votre recherche.',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.secondary,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      )
+                    : GridView.builder(
+                        padding: const EdgeInsets.all(AppSizes.s16),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: AppSizes.s12,
+                          mainAxisSpacing: AppSizes.s12,
+                          childAspectRatio: 0.75, // format portrait
+                        ),
+                        itemCount: filteredPosters.length,
+                        itemBuilder: (context, index) {
+                          final poster = filteredPosters[index];
+                          return GestureDetector(
+                            onLongPress: () => _showPosterOptions(context, ref, poster),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                                  child: Image.file(
+                                    File(poster.imagePath),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (ctx, error, stack) => Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).brightness == Brightness.light
+                                            ? AppColors.grey100
+                                            : AppColors.grey900,
+                                        borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                                      ),
+                                      child: const Center(
+                                        child: Icon(Icons.broken_image_outlined, color: AppColors.grey600),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                if (poster.title != null && poster.title!.isNotEmpty)
+                                  Positioned(
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        borderRadius: const BorderRadius.only(
+                                          bottomLeft: Radius.circular(AppSizes.radiusMedium),
+                                          bottomRight: Radius.circular(AppSizes.radiusMedium),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        poster.title!,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
