@@ -133,6 +133,15 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
     );
   }
 
+  void _openFullscreen(BuildContext context, PosterModel poster) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => _FullscreenImagePage(poster: poster),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoriesStreamProvider);
@@ -296,6 +305,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
           itemBuilder: (context, index) {
             final poster = filteredPosters[index];
             return GestureDetector(
+              onTap: () => _openFullscreen(context, poster),
               onLongPress: () => _showPosterOptions(context, ref, poster),
               child: Stack(
                 fit: StackFit.expand,
@@ -361,6 +371,47 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, stack) => Center(child: Text('Erreur: $err')),
+    );
+  }
+}
+
+// ─── Page plein écran ────────────────────────────────────────────────────────
+class _FullscreenImagePage extends StatelessWidget {
+  final PosterModel poster;
+  const _FullscreenImagePage({required this.poster});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        title: poster.title != null && poster.title!.isNotEmpty
+            ? Text(
+                poster.title!,
+                style: const TextStyle(color: Colors.white),
+              )
+            : null,
+        elevation: 0,
+      ),
+      body: Center(
+        child: InteractiveViewer(
+          minScale: 0.5,
+          maxScale: 5.0,
+          child: Image.file(
+            File(poster.imagePath),
+            fit: BoxFit.contain,
+            errorBuilder: (ctx, error, stack) => const Center(
+              child: Icon(
+                Icons.broken_image_outlined,
+                color: Colors.white54,
+                size: 64,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

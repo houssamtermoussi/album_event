@@ -54,11 +54,20 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
       imageQuality: 85,
     );
     if (image == null) return;
+    if (!context.mounted) return;
+
+    // Demander le titre avant d'enregistrer
+    final title = await _showTitleDialog(context);
+    if (title == null) return; // L'utilisateur a annulé
 
     try {
       await ref
           .read(posterRepositoryProvider)
-          .addPoster(imagePath: image.path, categoryId: widget.categoryId);
+          .addPoster(
+            imagePath: image.path,
+            categoryId: widget.categoryId,
+            title: title.trim().isEmpty ? null : title.trim(),
+          );
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
@@ -66,6 +75,47 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
         ).showSnackBar(SnackBar(content: Text('Erreur lors de l\'ajout : $e')));
       }
     }
+  }
+
+  // ─── Dialog pour saisir le titre ────────────────────────────────────────────
+  Future<String?> _showTitleDialog(BuildContext context) async {
+    final controller = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Titre de l\'image'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: const InputDecoration(
+            hintText: 'Ex : Soirée anniversaire…',
+            border: OutlineInputBorder(),
+          ),
+          onSubmitted: (v) => Navigator.of(ctx).pop(v),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(null),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(controller.text),
+            child: const Text('Ajouter'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Plein écran ─────────────────────────────────────────────────────────────
+  void _openFullscreen(BuildContext context, PosterModel poster) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => _FullscreenImagePage(poster: poster),
+      ),
+    );
   }
 
   // ─── Menu contextuel d'une affiche ──────────────────────────────────────────
@@ -245,6 +295,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                         itemBuilder: (context, index) {
                           final poster = filteredPosters[index];
                           return GestureDetector(
+                            onTap: () => _openFullscreen(context, poster),
                             onLongPress: () =>
                                 _showPosterOptions(context, ref, poster),
                             child: Stack(
@@ -323,6 +374,47 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Erreur : $err')),
+      ),
+    );
+  }
+}
+
+// ─── Page plein écran ────────────────────────────────────────────────────────
+class _FullscreenImagePage extends StatelessWidget {
+  final PosterModel poster;
+  const _FullscreenImagePage({required this.poster});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        title: poster.title != null && poster.title!.isNotEmpty
+            ? Text(
+                poster.title!,
+                style: const TextStyle(color: Colors.white),
+              )
+            : null,
+        elevation: 0,
+      ),
+      body: Center(
+        child: InteractiveViewer(
+          minScale: 0.5,
+          maxScale: 5.0,
+          child: Image.file(
+            File(poster.imagePath),
+            fit: BoxFit.contain,
+            errorBuilder: (ctx, error, stack) => const Center(
+              child: Icon(
+                Icons.broken_image_outlined,
+                color: Colors.white54,
+                size: 64,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
