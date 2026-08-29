@@ -191,14 +191,14 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
           Expanded(
             child: _searchQuery.isNotEmpty
                 ? _buildSearchResults(allPostersAsync)
-                : _buildCategoriesList(categoriesAsync),
+                : _buildCategoriesList(categoriesAsync, allPostersAsync),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCategoriesList(AsyncValue<List<CategoryModel>> categoriesAsync) {
+  Widget _buildCategoriesList(AsyncValue<List<CategoryModel>> categoriesAsync, AsyncValue<List<PosterModel>> allPostersAsync) {
     return categoriesAsync.when(
       data: (categories) {
         if (categories.isEmpty) {
@@ -226,10 +226,12 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];
+            final posterCount = allPostersAsync.value?.where((p) => p.categoryId == category.id).length ?? 0;
             return Padding(
               padding: const EdgeInsets.only(bottom: AppSizes.s8),
               child: CategoryCard(
                 category: category,
+                posterCount: posterCount,
                 onTap: () {
                   context.push('/category/${category.id}');
                 },
