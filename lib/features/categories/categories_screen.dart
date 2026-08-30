@@ -198,7 +198,10 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
     );
   }
 
-  Widget _buildCategoriesList(AsyncValue<List<CategoryModel>> categoriesAsync, AsyncValue<List<PosterModel>> allPostersAsync) {
+  Widget _buildCategoriesList(
+    AsyncValue<List<CategoryModel>> categoriesAsync,
+    AsyncValue<List<PosterModel>> allPostersAsync,
+  ) {
     return categoriesAsync.when(
       data: (categories) {
         if (categories.isEmpty) {
@@ -226,7 +229,11 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];
-            final posterCount = allPostersAsync.value?.where((p) => p.categoryId == category.id).length ?? 0;
+            final posterCount =
+                allPostersAsync.value
+                    ?.where((p) => p.categoryId == category.id)
+                    .length ??
+                0;
             return Padding(
               padding: const EdgeInsets.only(bottom: AppSizes.s8),
               child: CategoryCard(
@@ -390,10 +397,7 @@ class _FullscreenImagePage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         title: poster.title != null && poster.title!.isNotEmpty
-            ? Text(
-                poster.title!,
-                style: const TextStyle(color: Colors.white),
-              )
+            ? Text(poster.title!, style: const TextStyle(color: Colors.white))
             : null,
         elevation: 0,
       ),

@@ -392,10 +392,7 @@ class _FullscreenImagePage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         title: poster.title != null && poster.title!.isNotEmpty
-            ? Text(
-                poster.title!,
-                style: const TextStyle(color: Colors.white),
-              )
+            ? Text(poster.title!, style: const TextStyle(color: Colors.white))
             : null,
         elevation: 0,
       ),
