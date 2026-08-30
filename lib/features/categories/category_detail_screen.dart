@@ -89,7 +89,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
           autofocus: true,
           textCapitalization: TextCapitalization.sentences,
           decoration: const InputDecoration(
-            hintText: 'Ex : Soirée anniversaire…',
+            hintText: '',
             border: OutlineInputBorder(),
           ),
           onSubmitted: (v) => Navigator.of(ctx).pop(v),
