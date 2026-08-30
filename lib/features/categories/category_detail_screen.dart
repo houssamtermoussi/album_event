@@ -109,13 +109,68 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
   }
 
   // ─── Plein écran ─────────────────────────────────────────────────────────────
-  void _openFullscreen(BuildContext context, PosterModel poster) {
+  void _openFullscreen(
+    BuildContext context,
+    List<PosterModel> posters,
+    int initialIndex,
+  ) {
     Navigator.of(context).push(
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => _FullscreenImagePage(poster: poster),
+        builder: (_) => _FullscreenImagePage(
+          posters: posters,
+          initialIndex: initialIndex,
+        ),
       ),
     );
+  }
+
+  // ─── Renommer une affiche ────────────────────────────────────────────────────
+  Future<void> _renamePoster(
+    BuildContext context,
+    WidgetRef ref,
+    PosterModel poster,
+  ) async {
+    final controller = TextEditingController(text: poster.title ?? '');
+    final newTitle = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Modifier le titre'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: const InputDecoration(
+            hintText: 'Titre de la photo',
+            border: OutlineInputBorder(),
+          ),
+          onSubmitted: (v) => Navigator.of(ctx).pop(v),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(null),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(controller.text),
+            child: const Text('Enregistrer'),
+          ),
+        ],
+      ),
+    );
+    if (newTitle == null) return;
+    if (!context.mounted) return;
+    try {
+      await ref
+          .read(posterRepositoryProvider)
+          .updatePoster(id: poster.id, title: newTitle.trim());
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur lors de la modification : $e')),
+        );
+      }
+    }
   }
 
   // ─── Menu contextuel d'une affiche ──────────────────────────────────────────
@@ -130,6 +185,14 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Modifier le titre'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _renamePoster(context, ref, poster);
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.share_outlined),
               title: const Text('Partager'),
@@ -295,7 +358,11 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                         itemBuilder: (context, index) {
                           final poster = filteredPosters[index];
                           return GestureDetector(
-                            onTap: () => _openFullscreen(context, poster),
+                            onTap: () => _openFullscreen(
+                              context,
+                              filteredPosters,
+                              index,
+                            ),
                             onLongPress: () =>
                                 _showPosterOptions(context, ref, poster),
                             child: Stack(
@@ -379,39 +446,174 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
   }
 }
 
-// ─── Page plein écran ────────────────────────────────────────────────────────
-class _FullscreenImagePage extends StatelessWidget {
-  final PosterModel poster;
-  const _FullscreenImagePage({required this.poster});
+// ─── Page plein écran avec défilement ───────────────────────────────────────
+class _FullscreenImagePage extends ConsumerStatefulWidget {
+  final List<PosterModel> posters;
+  final int initialIndex;
+
+  const _FullscreenImagePage({
+    required this.posters,
+    required this.initialIndex,
+  });
+
+  @override
+  ConsumerState<_FullscreenImagePage> createState() =>
+      _FullscreenImagePageState();
+}
+
+class _FullscreenImagePageState extends ConsumerState<_FullscreenImagePage> {
+  late final PageController _pageController;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  PosterModel get _currentPoster => widget.posters[_currentIndex];
+
+  Future<void> _renameCurrentPoster(BuildContext context) async {
+    final controller =
+        TextEditingController(text: _currentPoster.title ?? '');
+    final newTitle = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Modifier le titre'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: const InputDecoration(
+            hintText: 'Titre de la photo',
+            border: OutlineInputBorder(),
+          ),
+          onSubmitted: (v) => Navigator.of(ctx).pop(v),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(null),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(controller.text),
+            child: const Text('Enregistrer'),
+          ),
+        ],
+      ),
+    );
+    if (newTitle == null) return;
+    if (!context.mounted) return;
+    try {
+      await ref
+          .read(posterRepositoryProvider)
+          .updatePoster(id: _currentPoster.id, title: newTitle.trim());
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur lors de la modification : $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // On écoute le stream pour avoir les titres à jour en temps réel
+    final postersAsync = ref.watch(
+      categoryPostersProvider(_currentPoster.categoryId),
+    );
+
+    // Résoudre la liste live (pour le titre actualisé)
+    final livePosters = postersAsync.valueOrNull ?? widget.posters;
+    // Trouver le poster courant dans la liste live via son id
+    final livePoster = livePosters.firstWhere(
+      (p) => p.id == _currentPoster.id,
+      orElse: () => _currentPoster,
+    );
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black.withValues(alpha: 0.6),
         foregroundColor: Colors.white,
-        title: poster.title != null && poster.title!.isNotEmpty
-            ? Text(poster.title!, style: const TextStyle(color: Colors.white))
+        title: livePoster.title != null && livePoster.title!.isNotEmpty
+            ? Text(
+                livePoster.title!,
+                style: const TextStyle(color: Colors.white),
+              )
             : null,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined, color: Colors.white),
+            tooltip: 'Modifier le titre',
+            onPressed: () => _renameCurrentPoster(context),
+          ),
+        ],
       ),
-      body: Center(
-        child: InteractiveViewer(
-          minScale: 0.5,
-          maxScale: 5.0,
-          child: Image.file(
-            File(poster.imagePath),
-            fit: BoxFit.contain,
-            errorBuilder: (ctx, error, stack) => const Center(
-              child: Icon(
-                Icons.broken_image_outlined,
-                color: Colors.white54,
-                size: 64,
+      body: Stack(
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            itemCount: widget.posters.length,
+            onPageChanged: (index) {
+              setState(() => _currentIndex = index);
+            },
+            itemBuilder: (context, index) {
+              final poster = widget.posters[index];
+              return InteractiveViewer(
+                minScale: 0.5,
+                maxScale: 5.0,
+                child: Image.file(
+                  File(poster.imagePath),
+                  fit: BoxFit.contain,
+                  errorBuilder: (ctx, error, stack) => const Center(
+                    child: Icon(
+                      Icons.broken_image_outlined,
+                      color: Colors.white54,
+                      size: 64,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          // Indicateur de position (ex: 2 / 5)
+          if (widget.posters.length > 1)
+            Positioned(
+              bottom: 24,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${_currentIndex + 1} / ${widget.posters.length}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
+        ],
       ),
     );
   }
